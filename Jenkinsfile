@@ -1,39 +1,14 @@
-pipeline{
-	agent any
+node {
+    stage ('Preperation'){
+        git credentialsId: '76bd5caa-ab6b-4245-a865-09e9c135f985', url: 'git@github.com:praqma-training/jenkins-pipeline-exercise.git'
 
-	stages{
-
-	   stage('Build')
-
-	   {
-	   steps{
-	         echo"Build Application"
-	                   }
-	    }
-
-	    stage('Test')
-
-	     {
-	   steps{
-	         echo"Testing Application"
-	                   }
-	    }
-	    stage('Deploy')
-
-	     {
-	   steps{
-	         echo"Deploy Application"
-	                   }
-	    }
-	}
-
-	post {
-        always {
-            
-        }
-        failure {
-            
-            emailext body: 'Summary', subject: 'PipeLine_Status', to: '19IT104@charusat.edu.in'
-                }
-        }
+    }
+    stage ('Build'){
+        sh'pwd'
+        sh'./gradlew clean test jar'
+    }
+    stage ('Result'){
+        junit '**/build/test-results/test/TEST-*.xml'
+        archiveArtifacts 'build/libs/*'
+    }
 }
